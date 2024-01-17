@@ -1,3 +1,4 @@
+
 /*
 Primer paso: ejecutar la app de Android en un dispositivo real y preferiblemente en debugger para poder ver los posibles fallos (en el emulador no se cual es el puerto para conectarse contra la API de la aplicación)
 Segundo paso: Indicar la ip del dispositivo (el puerto en la aplicacion definido es el 5000 por defecto), además poner las credenciales de la app
@@ -11,44 +12,22 @@ import FormData from 'form-data';
 import fs from 'fs';
 import fetch from "node-fetch";
 
-// let username = "ITAE";
-// let password = "?RDominicana1";
-
-
 let username = "Alejandra";
 let password = "?District1";
-//let deviceUrl = "http://192.168.1.142:5000/images"
-let deviceUrl = "http://172.20.10.7:5000/images"
+let deviceUrl = "http://172.17.4.242:5000/check"
 
 let headers = {};
 headers['Authorization'] = 'Basic ' + Buffer.from(username + ":" + password).toString('base64');
+headers['Accept'] = 'application/json';
 
-[38].forEach(async id => { // , 25, 26, 27, 28, 29, 30
-    for (var i = 0; i < 1; i++) {
-        const pid = "a" + id;
-        console.log("Uploading " + i + " file for " + pid);
-    
-        const form = new FormData();
-        form.append('empty', "0");
-        form.append('pid', pid);
-        form.append('date', '000000001');
-        form.append('devID', '0c245000ab0cb3fa');
-        form.append('type', 'IRIS');
-        form.append('sessionID', '3');
-        form.append('check', '3512392976');
-        form.append('meta', 'foto.jpg');
-        form.append('im', fs.createReadStream("./foto.jpg"  ));
+let pid = "";
+let form = new FormData();
+form.append('empty', "0");
+form.append('pid', "jT001");
+form.append('sessionID', "3");
+form.append('devID', '0c245000ab0cb3fa');
+form.append('type', 'IRIS');
 
 
-        await fetch(deviceUrl, {method: 'POST', headers: headers, body: form }).then(res => {
-                if(!res.ok) {
-                    console.log(res);
-                }
-            })
-            .catch(error =>
-            {
-                console.log("error", error)
-            });
-    }    
-})
-
+await fetch(deviceUrl, { method: 'POST', headers: headers, body: form }).then(response => response.json())
+.then(response => console.log(JSON.stringify(response)))
