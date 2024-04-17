@@ -7,27 +7,38 @@ Cuarto paso: Si el device id no existe da error al tratar de enviar los datos al
 Quinto paso: Si se sube una imagen nueva el Check debemos cambiarlo porque es propio de cada imagen (es un valor de comprobación para validar que la imagen no haya sido corrompida) El error daría en ImagesActivity.java linea 653
 Sexto paso: Si cambias el nombre de la imagen debes también cambiarlo en la etiqueta meta del form enviado
 */
-
-import FormData from 'form-data';
-import fs from 'fs';
 import fetch from "node-fetch";
 
 let username = "Alejandra";
 let password = "?District1";
-let deviceUrl = "http://172.17.4.242:5000/check"
+let deviceUrl = "http://192.168.1.23:5000/check"
 
 let headers = {};
 headers['Authorization'] = 'Basic ' + Buffer.from(username + ":" + password).toString('base64');
 headers['Accept'] = 'application/json';
 
-let pid = "";
-let form = new FormData();
-form.append('empty', "0");
-form.append('pid', "jT001");
-form.append('sessionID', "3");
-form.append('devID', '0c245000ab0cb3fa');
-form.append('type', 'IRIS');
+let jsonData = {
+    pid: "SWZ-L016-0234",
+    sessionID: "74",
+    devID: "0f2d48005e7f116a",
+    type: "IRIS"
+};
 
+await fetch(deviceUrl, {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify(jsonData)
+})
 
-await fetch(deviceUrl, { method: 'POST', headers: headers, body: form }).then(response => response.json())
-.then(response => console.log(JSON.stringify(response)))
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.json();
+})
+.then(data => {
+    console.log(data); // Aquí tienes el objeto JSON de la respuesta
+})
+.catch(error => {
+    console.error('Error fetching data:', error);
+});
